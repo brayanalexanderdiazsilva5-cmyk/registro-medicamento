@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Procesar Código QR</title>
+    <style>
+        body { font-family: Arial; text-align: center; margin: 50px; }
+        input, button { padding: 10px; margin: 10px; width: 80%; }
+    </style>
+</head>
+<body>
+    <h1>Pegar datos del código QR escaneado</h1>
+    <input type="text" id="datosQR" placeholder="Pega aquí el texto del QR">
+    <button onclick="procesarQR()">Enviar notificación</button>
+
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script>
+        // Inicializar EmailJS
+        emailjs.init("GwdThUNaTF87aMoxD");
+
+        function procesarQR() {
+            const textoQR = document.getElementById("datosQR").value;
+            const datos = textoQR.split('|');
+            let medicamento = {};
+
+            // Procesar datos del QR (formato: medicamento:Nombre|cantidad:Cantidad|lote:Lote)
+            datos.forEach(item => {
+                const [clave, valor] = item.split(':');
+                medicamento[clave] = valor;
+            });
+
+            // Enviar email
+            emailjs.send("servicio_medicamento", "template_okxov8c", {
+                medicamento: medicamento.medicamento,
+                cantidad: medicamento.cantidad,
+                lote: medicamento.lote
+            })
+            .then(() => alert("✅ Medicamento registrado desde QR"))
+            .catch(error => alert("❌ Error: " + error));
+        }
+    </script>
+</body>
+</html>
